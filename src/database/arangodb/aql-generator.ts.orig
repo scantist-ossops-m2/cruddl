@@ -1751,11 +1751,12 @@ function isStringCaseInsensitive(str: string) {
     return str.toLowerCase() === str.toUpperCase();
 }
 
-export function generateTokenizationQuery(tokensFiltered: ReadonlyArray<FlexSearchTokenizable>): AQLFragment {
-    const fragments: AQLFragment[] = [];
+export function generateTokenizationQuery(tokensFiltered: ReadonlyArray<FlexSearchTokenizable>) {
+    const fragments: string[] = [];
     for (let i = 0; i < tokensFiltered.length; i++) {
         const value = tokensFiltered[i];
-        fragments.push(aql`${aql.identifier('token_' + i)}: TOKENS(${value.expression}, ${value.analyzer})`);
+        fragments.push(`token_${i}: TOKENS("${value.expression}", "${value.analyzer}")`);
     }
-    return aql`RETURN { ${aql.join(fragments, aql`',\n`)} }`;
+    const query = `RETURN { ${fragments.join(',\n')} }`;
+    return query;
 }
